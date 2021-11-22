@@ -14,7 +14,7 @@ var (
 )
 
 type Dashboard interface {
-	CreateDashboard(ctx context.Context, name values.DashboardName, description values.DashboardDescription) (*domain.Dashboard, error)
+	CreateDashboard(ctx context.Context, user *domain.User, name values.DashboardName, description values.DashboardDescription) (*domain.Dashboard, error)
 	UpdateDashboard(ctx context.Context, id values.DashboardID, name values.DashboardName, description values.DashboardDescription) (*domain.Dashboard, error)
 	DeleteDashboard(ctx context.Context, id values.DashboardID) error
 	GetMyDashboards(ctx context.Context, user *domain.User) ([]*domain.Dashboard, error)

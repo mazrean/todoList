@@ -10,7 +10,7 @@ import (
 )
 
 type Dashboard interface {
-	CreateDashboard(ctx context.Context, dashboard *domain.Dashboard) error
+	CreateDashboard(ctx context.Context, userID values.UserID, dashboard *domain.Dashboard) error
 	UpdateDashboard(ctx context.Context, dashboard *domain.Dashboard) error
 	DeleteDashboard(ctx context.Context, id values.DashboardID) error
 	GetMyDashboards(ctx context.Context, userID values.UserID) ([]*domain.Dashboard, error)
