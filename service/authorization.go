@@ -9,8 +9,9 @@ import (
 )
 
 var (
-	ErrUserAlreadyExists = errors.New("user already exists")
+	ErrUserAlreadyExists     = errors.New("user already exists")
 	ErrInvalidUserOrPassword = errors.New("invalid user or password")
+	ErrNoUser                = errors.New("no user")
 )
 
 type Authorization interface {
