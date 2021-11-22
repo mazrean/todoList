@@ -95,3 +95,12 @@ func (a *Authorization) UpdateUserInfo(ctx context.Context, user *domain.User, n
 
 	return user, nil
 }
+
+func (a *Authorization) DeleteAccount(ctx context.Context, user *domain.User) error {
+	err := a.userRepository.DeleteUser(ctx, user.GetID())
+	if err != nil {
+		return fmt.Errorf("failed to delete user: %w", err)
+	}
+
+	return nil
+}
