@@ -10,6 +10,7 @@ import (
 
 var (
 	ErrNoDashboard = errors.New("no dashboard")
+	ErrNotDashboardOwner = errors.New("not dashboard owner")
 )
 
 type Dashboard interface {
@@ -18,7 +19,7 @@ type Dashboard interface {
 	DeleteDashboard(ctx context.Context, id values.DashboardID) error
 	GetMyDashboards(ctx context.Context, user *domain.User) ([]*domain.Dashboard, error)
 	GetDashboardInfo(ctx context.Context, id values.DashboardID) (*DashboardInfo, error)
-	DashboardAuth(ctx context.Context, user *domain.User, id values.DashboardID) error
+	DashboardUpdateAuth(ctx context.Context, user *domain.User, id values.DashboardID) error
 }
 
 type DashboardInfo struct {
