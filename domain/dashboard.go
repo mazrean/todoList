@@ -7,23 +7,23 @@ import (
 )
 
 type Dashboard struct {
-	id         values.DashboardID
-	name       values.DashboardName
+	id          values.DashboardID
+	name        values.DashboardName
 	description values.DashboardDescription
-	createdAt  time.Time
+	createdAt   time.Time
 }
 
 func NewDashboard(
-	id 				values.DashboardID,
+	id values.DashboardID,
 	name values.DashboardName,
 	description values.DashboardDescription,
 	createdAt time.Time,
 ) *Dashboard {
 	return &Dashboard{
-		id:         id,
-		name:       name,
+		id:          id,
+		name:        name,
 		description: description,
-		createdAt:  createdAt,
+		createdAt:   createdAt,
 	}
 }
 

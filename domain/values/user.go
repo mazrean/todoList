@@ -9,9 +9,9 @@ import (
 )
 
 type (
-	UserID uuid.UUID
-	UserName string
-	UserPassword []byte
+	UserID             uuid.UUID
+	UserName           string
+	UserPassword       []byte
 	UserHashedPassword []byte
 )
 

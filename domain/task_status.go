@@ -9,7 +9,7 @@ type TaskStatus struct {
 
 func NewTaskStatus(id values.TaskStatusID, name values.TaskStatusName) *TaskStatus {
 	return &TaskStatus{
-		id: id,
+		id:   id,
 		name: name,
 	}
 }
