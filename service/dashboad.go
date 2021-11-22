@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	ErrNoDashboard = errors.New("no dashboard")
+	ErrNoDashboard       = errors.New("no dashboard")
 	ErrNotDashboardOwner = errors.New("not dashboard owner")
 )
 

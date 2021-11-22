@@ -15,4 +15,5 @@ type Task interface {
 	DeleteTask(ctx context.Context, taskID values.TaskID) error
 	GetTask(ctx context.Context, taskID values.TaskID, lockType LockType) (*domain.Task, error)
 	GetTasks(ctx context.Context, taskStatusID values.TaskStatusID) ([]*domain.Task, error)
+	GetTaskOwner(ctx context.Context, id values.TaskID) (*domain.User, error)
 }
