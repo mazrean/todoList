@@ -78,3 +78,20 @@ func (a *Authorization) Login(ctx context.Context, name values.UserName, passwor
 
 	return user, nil
 }
+
+func (a *Authorization) UpdateUserInfo(ctx context.Context, user *domain.User, name values.UserName, password values.UserPassword) (*domain.User, error) {
+	hashedPassword, err := password.Hash()
+	if err != nil {
+		return nil, fmt.Errorf("failed to hash password: %w", err)
+	}
+
+	user.SetName(name)
+	user.SetHashedPassword(hashedPassword)
+
+	err = a.userRepository.UpdateUser(ctx, user)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update user: %w", err)
+	}
+
+	return user, nil
+}

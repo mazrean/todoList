@@ -35,8 +35,16 @@ func (d *Dashboard) GetName() values.DashboardName {
 	return d.name
 }
 
+func (d *Dashboard) SetName(name values.DashboardName) {
+	d.name = name
+}
+
 func (d *Dashboard) GetDescription() values.DashboardDescription {
 	return d.description
+}
+
+func (d *Dashboard) SetDescription(description values.DashboardDescription) {
+	d.description = description
 }
 
 func (d *Dashboard) GetCreatedAt() time.Time {

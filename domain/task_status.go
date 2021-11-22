@@ -21,3 +21,7 @@ func (s *TaskStatus) GetID() values.TaskStatusID {
 func (s *TaskStatus) GetName() values.TaskStatusName {
 	return s.name
 }
+
+func (s *TaskStatus) SetName(name values.TaskStatusName) {
+	s.name = name
+}

@@ -28,6 +28,14 @@ func (u *User) GetName() values.UserName {
 	return u.name
 }
 
+func (u *User) SetName(name values.UserName) {
+	u.name = name
+}
+
 func (u *User) GetHashedPassword() values.UserHashedPassword {
 	return u.hashedPassword
+}
+
+func (u *User) SetHashedPassword(hashedPassword values.UserHashedPassword) {
+	u.hashedPassword = hashedPassword
 }

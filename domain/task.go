@@ -35,8 +35,16 @@ func (t *Task) GetName() values.TaskName {
 	return t.name
 }
 
+func (t *Task) SetName(name values.TaskName) {
+	t.name = name
+}
+
 func (t *Task) GetDescription() values.TaskDescription {
 	return t.description
+}
+
+func (t *Task) SetDescription(description values.TaskDescription) {
+	t.description = description
 }
 
 func (t *Task) GetCreatedAt() time.Time {
