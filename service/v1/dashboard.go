@@ -103,3 +103,27 @@ func (d *Dashboard) UpdateDashboard(ctx context.Context, id values.DashboardID, 
 
 	return dashboard, nil
 }
+
+func (d *Dashboard) DeleteDashboard(ctx context.Context, id values.DashboardID) error {
+	err := d.db.Transaction(ctx, nil, func(context.Context) error {
+		_, err := d.dashboardRepository.GetDashboard(ctx, id, repository.LockTypeRecord)
+		if errors.Is(err, repository.ErrRecordNotFound) {
+			return service.ErrNoDashboard
+		}
+		if err != nil {
+			return fmt.Errorf("failed to get dashboard: %w", err)
+		}
+
+		err = d.dashboardRepository.DeleteDashboard(ctx, id)
+		if err != nil {
+			return fmt.Errorf("failed to delete dashboard: %w", err)
+		}
+
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("failed in transaction: %w", err)
+	}
+
+	return nil
+}
