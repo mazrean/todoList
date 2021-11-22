@@ -9,6 +9,4 @@ type (
 
 	TaskStatusID   uuid.UUID
 	TaskStatusName string
-
-	TaskStatusBindID uuid.UUID
 )
