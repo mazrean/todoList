@@ -127,3 +127,12 @@ func (d *Dashboard) DeleteDashboard(ctx context.Context, id values.DashboardID) 
 
 	return nil
 }
+
+func (d *Dashboard) GetMyDashboards(ctx context.Context, user *domain.User) ([]*domain.Dashboard, error) {
+	dashboards, err := d.dashboardRepository.GetMyDashboards(ctx, user.GetID())
+	if err != nil {
+		return nil, fmt.Errorf("failed to get my dashboards: %w", err)
+	}
+
+	return dashboards, nil
+}
