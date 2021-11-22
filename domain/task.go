@@ -26,3 +26,19 @@ func NewTask(
 		createdAt:   createdAt,
 	}
 }
+
+func (t *Task) GetID() values.TaskID {
+	return t.id
+}
+
+func (t *Task) GetName() values.TaskName {
+	return t.name
+}
+
+func (t *Task) GetDescription() values.TaskDescription {
+	return t.description
+}
+
+func (t *Task) GetCreatedAt() time.Time {
+	return t.createdAt
+}

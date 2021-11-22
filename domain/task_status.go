@@ -13,3 +13,11 @@ func NewTaskStatus(id values.TaskStatusID, name values.TaskStatusName) *TaskStat
 		name: name,
 	}
 }
+
+func (s *TaskStatus) GetID() values.TaskStatusID {
+	return s.id
+}
+
+func (s *TaskStatus) GetName() values.TaskStatusName {
+	return s.name
+}
