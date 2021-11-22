@@ -18,4 +18,5 @@ type Task interface {
 	UpdateTask(ctx context.Context, taskID values.TaskID, name values.TaskName, description values.TaskDescription) (*domain.Task, error)
 	DeleteTask(ctx context.Context, taskID values.TaskID) error
 	MovedTask(ctx context.Context, taskID values.TaskID, taskStatusID values.TaskStatusID) (*domain.Task, error)
+	TaskUpdateAuth(ctx context.Context, user *domain.User, taskID values.TaskID) error
 }
