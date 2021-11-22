@@ -58,3 +58,23 @@ func (a *Authorization) Signup(ctx context.Context, name values.UserName, passwo
 
 	return user, nil
 }
+
+func (a *Authorization) Login(ctx context.Context, name values.UserName, password values.UserPassword) (*domain.User, error) {
+	user, err := a.userRepository.GetUserByName(ctx, name)
+	if errors.Is(err, repository.ErrRecordNotFound) {
+		return nil, service.ErrInvalidUserOrPassword
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user: %w", err)
+	}
+
+	err = user.GetHashedPassword().Compare(password)
+	if errors.Is(err, values.ErrInvalidPassword) {
+		return nil, service.ErrInvalidUserOrPassword
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to compare password: %w", err)
+	}
+
+	return user, nil
+}

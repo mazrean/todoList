@@ -19,3 +19,15 @@ func NewUser(
 		hashedPassword: hashedPassword,
 	}
 }
+
+func (u *User) GetID() values.UserID {
+	return u.id
+}
+
+func (u *User) GetName() values.UserName {
+	return u.name
+}
+
+func (u *User) GetHashedPassword() values.UserHashedPassword {
+	return u.hashedPassword
+}
