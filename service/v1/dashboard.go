@@ -136,3 +136,31 @@ func (d *Dashboard) GetMyDashboards(ctx context.Context, user *domain.User) ([]*
 
 	return dashboards, nil
 }
+
+func (d *Dashboard) DashboardUpdateAuth(ctx context.Context, user *domain.User, id values.DashboardID) error {
+	err := d.db.Transaction(ctx, nil, func(context.Context) error {
+		_, err := d.dashboardRepository.GetDashboard(ctx, id, repository.LockTypeRecord)
+		if errors.Is(err, repository.ErrRecordNotFound) {
+			return service.ErrNoDashboard
+		}
+		if err != nil {
+			return fmt.Errorf("failed to get dashboard: %w", err)
+		}
+
+		owner, err := d.dashboardRepository.GetDashboardOwner(ctx, id)
+		if err != nil {
+			return fmt.Errorf("failed to update dashboard auth: %w", err)
+		}
+
+		if owner.GetID() != user.GetID() {
+			return service.ErrNotDashboardOwner
+		}
+
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("failed in transaction: %w", err)
+	}
+
+	return nil
+}
