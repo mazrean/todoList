@@ -7,7 +7,14 @@ import (
 	"github.com/google/uuid"
 	"github.com/mazrean/todoList/domain"
 	"github.com/mazrean/todoList/domain/values"
+	"github.com/mazrean/todoList/repository"
 )
+
+type TaskStatusTable struct {
+	ID          uuid.UUID `db:"id"`
+	DashboardID uuid.UUID `db:"dashboard_id"`
+	Name        string    `db:"name"`
+}
 
 type TaskStatus struct {
 	db *DB
@@ -74,4 +81,29 @@ func (ts *TaskStatus) DeleteTaskStatus(ctx context.Context, id values.TaskStatus
 	}
 
 	return nil
+}
+
+func (ts *TaskStatus) GetTaskStatus(ctx context.Context, taskStatusID values.TaskStatusID, lockType repository.LockType) (*domain.TaskStatus, error) {
+	db, err := ts.db.getDB(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get db: %w", err)
+	}
+
+	taskStatusTable := TaskStatusTable{}
+	err = db.GetContext(
+		ctx,
+		&taskStatusTable,
+		"SELECT id, name FROM task_status WHERE id = ?",
+		uuid.UUID(taskStatusID),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get task status: %w", err)
+	}
+
+	taskStatus := domain.NewTaskStatus(
+		values.NewTaskStatusIDFromUUID(taskStatusTable.ID),
+		values.NewTaskStatusName(taskStatusTable.Name),
+	)
+
+	return taskStatus, nil
 }
