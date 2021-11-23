@@ -3,6 +3,7 @@ package sqlx
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/mazrean/todoList/domain"
@@ -73,7 +74,8 @@ func (ts *TaskStatus) DeleteTaskStatus(ctx context.Context, id values.TaskStatus
 
 	_, err = db.ExecContext(
 		ctx,
-		"DELETE FROM task_status WHERE id = ?",
+		"UPDATE task_status SET deleted_at = ? WHERE id = ?",
+		time.Now(),
 		uuid.UUID(id),
 	)
 	if err != nil {
@@ -87,6 +89,12 @@ func (ts *TaskStatus) GetTaskStatus(ctx context.Context, taskStatusID values.Tas
 	db, err := ts.db.getDB(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get db: %w", err)
+	}
+
+	query := "SELECT id, name FROM task_status WHERE id = ?"
+	switch lockType {
+	case repository.LockTypeRecord:
+		query += " FOR UPDATE"
 	}
 
 	taskStatusTable := TaskStatusTable{}
@@ -134,4 +142,31 @@ func (ts *TaskStatus) GetTaskStatusList(ctx context.Context, dashboardID values.
 	}
 
 	return taskStatusList, nil
+}
+
+func (ts *TaskStatus) GetTaskStatusOwner(ctx context.Context, id values.TaskStatusID) (*domain.User, error) {
+	db, err := ts.db.getDB(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get db: %w", err)
+	}
+
+	userTable := UsersTable{}
+	err = db.GetContext(
+		ctx,
+		&userTable,
+		"SELECT users.id, users.name, users.hashed_password FROM users "+
+			"JOIN dashboards ON users.id = dashboards.user_id "+
+			"JOIN task_status ON dashboards.id = task_status.dashboard_id "+
+			"WHERE task_status.id = ? AND users.deleted_at IS NULL AND dashboards.deleted_at IS NULL AND task_status.deleted_at IS NULL",
+		uuid.UUID(id),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get task status owner: %w", err)
+	}
+
+	return domain.NewUser(
+		values.NewUserIDFromUUID(userTable.ID),
+		values.NewUserName(userTable.Name),
+		values.NewUserHashedPassword(userTable.HashedPassword),
+	), nil
 }
