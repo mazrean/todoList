@@ -11,7 +11,7 @@ import (
 )
 
 type User struct {
-	session              *Session
+	session *Session
 	authorizationService service.Authorization
 }
 
@@ -20,13 +20,13 @@ func NewUser(
 	authorizationService service.Authorization,
 ) *User {
 	return &User{
-		session:              session,
+		session: session,
 		authorizationService: authorizationService,
 	}
 }
 
 type UserInfo struct {
-	Name     string `json:"name"`
+	Name string `json:"name"`
 	Password string `json:"password"`
 }
 
@@ -195,7 +195,7 @@ func (u *User) DeleteMe(c *gin.Context) {
 		return
 	}
 
-	err = u.authorizationService.DeleteUser(
+	err = u.authorizationService.DeleteAccount(
 		c.Request.Context(),
 		user,
 	)
