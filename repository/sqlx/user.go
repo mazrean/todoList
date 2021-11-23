@@ -24,7 +24,8 @@ func (u *User) CreateUser(ctx context.Context, user *domain.User) error {
 		return fmt.Errorf("failed to get db: %w", err)
 	}
 
-	_, err = db.Exec(
+	_, err = db.ExecContext(
+		ctx,
 		"INSERT INTO users (id, name, hashed_password) VALUES (?, ?, ?)",
 		uuid.UUID(user.GetID()),
 		string(user.GetName()),
