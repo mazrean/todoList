@@ -11,15 +11,18 @@ import (
 )
 
 type User struct {
+	context              *Context
 	session              *Session
 	authorizationService service.Authorization
 }
 
 func NewUser(
+	context *Context,
 	session *Session,
 	authorizationService service.Authorization,
 ) *User {
 	return &User{
+		context:              context,
 		session:              session,
 		authorizationService: authorizationService,
 	}
@@ -121,7 +124,14 @@ func (u *User) PostLogin(c *gin.Context) {
 }
 
 func (u *User) GetMe(c *gin.Context) {
-	session := u.session.getSession(c)
+	session, ok := u.context.getSession(c)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "failed to get session",
+		})
+		return
+	}
+
 	user, err := u.session.getUser(session)
 	if err != nil {
 		log.Printf("failed to get user: %v\n", err)
@@ -146,7 +156,14 @@ func (u *User) PatchMe(c *gin.Context) {
 		return
 	}
 
-	session := u.session.getSession(c)
+	session, ok := u.context.getSession(c)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "failed to get session",
+		})
+		return
+	}
+
 	user, err := u.session.getUser(session)
 	if err != nil {
 		log.Printf("failed to get user: %v\n", err)
@@ -185,7 +202,14 @@ func (u *User) PatchMe(c *gin.Context) {
 }
 
 func (u *User) DeleteMe(c *gin.Context) {
-	session := u.session.getSession(c)
+	session, ok := u.context.getSession(c)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "failed to get session",
+		})
+		return
+	}
+
 	user, err := u.session.getUser(session)
 	if err != nil {
 		log.Printf("failed to get user: %v\n", err)

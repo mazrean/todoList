@@ -11,12 +11,8 @@ import (
 	"github.com/mazrean/todoList/service"
 )
 
-const (
-	sessionCtxKey    = "session"
-	taskStatusCtxKey = "taskStatus"
-)
-
 type Middleware struct {
+	context           *Context
 	session           *Session
 	dashboardService  service.Dashboard
 	taskStatusService service.TaskStatus
@@ -24,12 +20,14 @@ type Middleware struct {
 }
 
 func NewMiddleware(
+	context *Context,
 	session *Session,
 	dashboardService service.Dashboard,
 	taskStatusService service.TaskStatus,
 	taskService service.Task,
 ) *Middleware {
 	return &Middleware{
+		context:           context,
 		session:           session,
 		dashboardService:  dashboardService,
 		taskStatusService: taskStatusService,
@@ -48,7 +46,7 @@ func (m *Middleware) LoginAuth() gin.HandlerFunc {
 			return
 		}
 
-		c.Set(sessionCtxKey, session)
+		m.context.setSession(c, session)
 
 		c.Next()
 	}
@@ -99,6 +97,8 @@ func (m *Middleware) DashboardUpdateAuth() gin.HandlerFunc {
 			return
 		}
 
+		m.context.setSession(c, session)
+
 		c.Next()
 	}
 }
@@ -148,7 +148,8 @@ func (m *Middleware) TaskStatusUpdateAuth() gin.HandlerFunc {
 			return
 		}
 
-		c.Set(taskStatusCtxKey, taskStatus)
+		m.context.setSession(c, session)
+		m.context.setTaskStatus(c, taskStatus)
 
 		c.Next()
 	}
@@ -198,6 +199,8 @@ func (m *Middleware) TaskUpdateAuth() gin.HandlerFunc {
 			})
 			return
 		}
+
+		m.context.setSession(c, session)
 
 		c.Next()
 	}

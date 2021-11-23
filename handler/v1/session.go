@@ -16,10 +16,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const (
-	sessionContextKey = "session"
-)
-
 type Session struct {
 	key    string
 	secret string
@@ -49,8 +45,6 @@ func (s *Session) Use(r *gin.Engine) {
 
 func (s *Session) getSession(c *gin.Context) sessions.Session {
 	session := sessions.Default(c)
-
-	c.Set(sessionContextKey, session)
 
 	return session
 }
