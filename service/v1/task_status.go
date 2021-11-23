@@ -108,3 +108,21 @@ func (ts *TaskStatus) DeleteTaskStatus(ctx context.Context, id values.TaskStatus
 
 	return err
 }
+
+func (ts *TaskStatus) TaskStatusUpdateAuth(ctx context.Context, user *domain.User, id values.TaskStatusID) (*domain.TaskStatus, error) {
+	taskStatus, err := ts.taskStatusRepository.GetTaskStatus(ctx, id, repository.LockTypeNone)
+	if errors.Is(err, repository.ErrRecordNotFound) {
+		return nil, service.ErrNoTaskStatus
+	}
+
+	owner, err := ts.taskStatusRepository.GetTaskStatusOwner(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get task status: %w", err)
+	}
+
+	if owner.GetID() != user.GetID() {
+		return nil, service.ErrNotDashboardOwner
+	}
+
+	return taskStatus, nil
+}
