@@ -37,6 +37,14 @@ type DashboardInfo struct {
 	CreatedAt   time.Time `json:"createdAt"`
 }
 
+type DashboardDetail struct {
+	ID             uuid.UUID          `json:"id"`
+	Name           string             `json:"name"`
+	Description    string             `json:"description"`
+	CreatedAt      time.Time          `json:"createdAt"`
+	TaskStatusList []TaskStatusDetail `json:"taskStatusList"`
+}
+
 func (d *Dashboard) PostDashboard(c *gin.Context) {
 	var info DashboardInfo
 	err := c.BindJSON(&info)
@@ -205,14 +213,6 @@ func (d *Dashboard) GetMyDashboards(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dashboardInfos)
-}
-
-type DashboardDetail struct {
-	ID             uuid.UUID          `json:"id"`
-	Name           string             `json:"name"`
-	Description    string             `json:"description"`
-	CreatedAt      time.Time          `json:"createdAt"`
-	TaskStatusList []TaskStatusDetail `json:"taskStatusList"`
 }
 
 func (d *Dashboard) GetDashboardInfo(c *gin.Context) {

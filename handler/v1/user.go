@@ -30,7 +30,7 @@ func NewUser(
 
 type UserInfo struct {
 	Name     string `json:"name" binding:"required,min:8,max:25"`
-	Password string `json:"password" binding:"required,min:10,max:50"`
+	Password string `json:"password" binding:"required,min:10,max:50,alphanum"`
 }
 
 func (u *User) PostSignup(c *gin.Context) {
