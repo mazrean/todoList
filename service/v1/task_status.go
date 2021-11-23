@@ -114,6 +114,9 @@ func (ts *TaskStatus) TaskStatusUpdateAuth(ctx context.Context, user *domain.Use
 	if errors.Is(err, repository.ErrRecordNotFound) {
 		return nil, service.ErrNoTaskStatus
 	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to get task status: %w", err)
+	}
 
 	owner, err := ts.taskStatusRepository.GetTaskStatusOwner(ctx, id)
 	if err != nil {

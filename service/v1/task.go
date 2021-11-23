@@ -9,6 +9,7 @@ import (
 	"github.com/mazrean/todoList/domain"
 	"github.com/mazrean/todoList/domain/values"
 	"github.com/mazrean/todoList/repository"
+	"github.com/mazrean/todoList/service"
 )
 
 type Task struct {
@@ -149,4 +150,25 @@ func (t *Task) MoveTask(ctx context.Context, taskID values.TaskID, taskStatusID 
 	}
 
 	return task, nil
+}
+
+func (t *Task) TaskUpdateAuth(ctx context.Context, user *domain.User, taskID values.TaskID) error {
+	_, err := t.taskRepository.GetTask(ctx, taskID, repository.LockTypeNone)
+	if errors.Is(err, repository.ErrRecordNotFound) {
+		return errors.New("task not found")
+	}
+	if err != nil {
+		return fmt.Errorf("failed to get task: %w", err)
+	}
+
+	owner, err := t.taskRepository.GetTaskOwner(ctx, taskID)
+	if err != nil {
+		return fmt.Errorf("failed to get task owner: %w", err)
+	}
+
+	if owner.GetID() != user.GetID() {
+		return service.ErrNotDashboardOwner
+	}
+
+	return nil
 }
