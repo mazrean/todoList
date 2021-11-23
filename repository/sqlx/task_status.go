@@ -38,3 +38,22 @@ func (ts *TaskStatus) CreateTaskStatus(ctx context.Context, dashboardID values.D
 
 	return nil
 }
+
+func (ts *TaskStatus) UpdateTaskStatus(ctx context.Context, taskStatus *domain.TaskStatus) error {
+	db, err := ts.db.getDB(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get db: %w", err)
+	}
+
+	_, err = db.ExecContext(
+		ctx,
+		"UPDATE task_status SET name = ? WHERE id = ?",
+		string(taskStatus.GetName()),
+		uuid.UUID(taskStatus.GetID()),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to update task status: %w", err)
+	}
+
+	return nil
+}
