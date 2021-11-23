@@ -84,3 +84,27 @@ func (ts *TaskStatus) UpdateTaskStatus(ctx context.Context, id values.TaskStatus
 
 	return taskStatus, err
 }
+
+func (ts *TaskStatus) DeleteTaskStatus(ctx context.Context, id values.TaskStatusID) error {
+	err := ts.db.Transaction(ctx, nil, func(ctx context.Context) error {
+		_, err := ts.taskStatusRepository.GetTaskStatus(ctx, id, repository.LockTypeRecord)
+		if errors.Is(err, repository.ErrRecordNotFound) {
+			return service.ErrNoTaskStatus
+		}
+		if err != nil {
+			return fmt.Errorf("failed to get task status: %w", err)
+		}
+
+		err = ts.taskStatusRepository.DeleteTaskStatus(ctx, id)
+		if err != nil {
+			return fmt.Errorf("failed to delete task status: %w", err)
+		}
+
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("failed in transaction: %w", err)
+	}
+
+	return err
+}
