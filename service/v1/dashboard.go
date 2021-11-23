@@ -159,7 +159,6 @@ func (d *Dashboard) GetDashboardInfo(ctx context.Context, id values.DashboardID)
 		return nil, fmt.Errorf("failed to get tasks: %w", err)
 	}
 
-	// TODO: N+1問題
 	taskStatusInfos := make([]*service.TaskStatusInfo, 0, len(taskStatusList))
 	for _, taskStatus := range taskStatusList {
 		taskStatusInfos = append(taskStatusInfos, &service.TaskStatusInfo{
