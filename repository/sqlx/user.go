@@ -37,3 +37,23 @@ func (u *User) CreateUser(ctx context.Context, user *domain.User) error {
 
 	return nil
 }
+
+func (u *User) UpdateUser(ctx context.Context, user *domain.User) error {
+	db, err := u.db.getDB(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get db: %w", err)
+	}
+
+	_, err = db.ExecContext(
+		ctx,
+		"UPDATE users SET name = ?, hashed_password = ? WHERE id = ?",
+		string(user.GetName()),
+		[]byte(user.GetHashedPassword()),
+		uuid.UUID(user.GetID()),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to update user: %w", err)
+	}
+
+	return nil
+}
