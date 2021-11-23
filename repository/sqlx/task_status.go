@@ -2,6 +2,8 @@ package sqlx
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -122,6 +124,9 @@ func (ts *TaskStatus) GetTaskStatus(ctx context.Context, taskStatusID values.Tas
 		query,
 		uuid.UUID(taskStatusID),
 	)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, repository.ErrRecordNotFound
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to get task status: %w", err)
 	}
@@ -178,6 +183,9 @@ func (ts *TaskStatus) GetTaskStatusOwner(ctx context.Context, id values.TaskStat
 			"WHERE task_status.id = ? AND users.deleted_at IS NULL AND dashboards.deleted_at IS NULL AND task_status.deleted_at IS NULL",
 		uuid.UUID(id),
 	)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, repository.ErrRecordNotFound
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to get task status owner: %w", err)
 	}

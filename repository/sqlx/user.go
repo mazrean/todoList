@@ -3,6 +3,7 @@ package sqlx
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -125,6 +126,9 @@ func (u *User) GetUser(ctx context.Context, userID values.UserID, lockType repos
 		query,
 		uuid.UUID(userID),
 	)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, repository.ErrRecordNotFound
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
@@ -151,6 +155,9 @@ func (u *User) GetUserByName(ctx context.Context, name values.UserName) (*domain
 		"SELECT id, name, hashed_password FROM users WHERE name = ? AND deleted_at IS NULL",
 		string(name),
 	)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, repository.ErrRecordNotFound
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}

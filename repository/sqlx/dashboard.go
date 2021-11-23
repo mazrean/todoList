@@ -3,6 +3,7 @@ package sqlx
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -159,6 +160,9 @@ func (d *Dashboard) GetDashboard(ctx context.Context, id values.DashboardID, loc
 		query,
 		uuid.UUID(id),
 	)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, repository.ErrRecordNotFound
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to get dashboard: %w", err)
 	}
@@ -186,6 +190,9 @@ func (d *Dashboard) GetDashboardOwner(ctx context.Context, id values.DashboardID
 		"SELECT users.id, users.name, users.hashed_password FROM users JOIN dashboards ON users.id = dashboards.user_id WHERE dashboards.id = ? AND users.deleted_at IS NULL AND dashboards.deleted_at IS NULL",
 		uuid.UUID(id),
 	)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, repository.ErrRecordNotFound
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
