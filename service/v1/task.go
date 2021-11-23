@@ -91,3 +91,27 @@ func (t *Task) UpdateTask(ctx context.Context, taskID values.TaskID, name values
 
 	return task, nil
 }
+
+func (t *Task) DeleteTask(ctx context.Context, taskID values.TaskID) error {
+	err := t.db.Transaction(ctx, nil, func(ctx context.Context) error {
+		_, err := t.taskRepository.GetTask(ctx, taskID, repository.LockTypeRecord)
+		if errors.Is(err, repository.ErrRecordNotFound) {
+			return errors.New("task not found")
+		}
+		if err != nil {
+			return fmt.Errorf("failed to get task: %w", err)
+		}
+
+		err = t.taskRepository.DeleteTask(ctx, taskID)
+		if err != nil {
+			return fmt.Errorf("failed to delete task: %w", err)
+		}
+
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("failed in transaction: %w", err)
+	}
+
+	return nil
+}
