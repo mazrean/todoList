@@ -113,3 +113,29 @@ func (u *User) GetUser(ctx context.Context, userID values.UserID, lockType repos
 
 	return user, nil
 }
+
+func (u *User) GetUserByName(ctx context.Context, name values.UserName) (*domain.User, error) {
+	db, err := u.db.getDB(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get db: %w", err)
+	}
+
+	var userTable UsersTable
+	err = db.GetContext(
+		ctx,
+		&userTable,
+		"SELECT id, name, hashed_password FROM users WHERE name = ? AND deleted_at IS NULL",
+		string(name),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user: %w", err)
+	}
+
+	user := domain.NewUser(
+		values.NewUserIDFromUUID(userTable.ID),
+		values.NewUserName(userTable.Name),
+		values.NewUserHashedPassword(userTable.HashedPassword),
+	)
+
+	return user, nil
+}
