@@ -61,8 +61,8 @@ func (t *Task) UpdateTask(ctx context.Context, task *domain.Task) error {
 	return nil
 }
 
-func (task *Task) UpdateTaskStatus(ctx context.Context, taskID values.TaskID, taskStatusID values.TaskStatusID) error {
-	db, err := task.db.getDB(ctx)
+func (t *Task) UpdateTaskStatus(ctx context.Context, taskID values.TaskID, taskStatusID values.TaskStatusID) error {
+	db, err := t.db.getDB(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to get db: %w", err)
 	}
@@ -75,6 +75,24 @@ func (task *Task) UpdateTaskStatus(ctx context.Context, taskID values.TaskID, ta
 	)
 	if err != nil {
 		return fmt.Errorf("failed to update task status: %w", err)
+	}
+
+	return nil
+}
+
+func (t *Task) DeleteTask(ctx context.Context, taskID values.TaskID) error {
+	db, err := t.db.getDB(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get db: %w", err)
+	}
+
+	_, err = db.ExecContext(
+		ctx,
+		"DELETE FROM tasks WHERE id = ?",
+		uuid.UUID(taskID),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to update task: %w", err)
 	}
 
 	return nil
