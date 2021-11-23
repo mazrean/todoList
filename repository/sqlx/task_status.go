@@ -107,3 +107,31 @@ func (ts *TaskStatus) GetTaskStatus(ctx context.Context, taskStatusID values.Tas
 
 	return taskStatus, nil
 }
+
+func (ts *TaskStatus) GetTaskStatusList(ctx context.Context, dashboardID values.DashboardID) ([]*domain.TaskStatus, error) {
+	db, err := ts.db.getDB(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get db: %w", err)
+	}
+
+	taskStatusTableList := []TaskStatusTable{}
+	err = db.SelectContext(
+		ctx,
+		&taskStatusTableList,
+		"SELECT id, name FROM task_status WHERE dashboard_id = ?",
+		uuid.UUID(dashboardID),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get task status list: %w", err)
+	}
+
+	taskStatusList := make([]*domain.TaskStatus, 0, len(taskStatusTableList))
+	for _, taskStatusTable := range taskStatusTableList {
+		taskStatusList = append(taskStatusList, domain.NewTaskStatus(
+			values.NewTaskStatusIDFromUUID(taskStatusTable.ID),
+			values.NewTaskStatusName(taskStatusTable.Name),
+		))
+	}
+
+	return taskStatusList, nil
+}
