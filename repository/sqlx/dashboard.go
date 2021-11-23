@@ -12,7 +12,7 @@ import (
 	"github.com/mazrean/todoList/repository"
 )
 
-type DashboardTable struct {
+type DashboardsTable struct {
 	ID          uuid.UUID    `db:"id"`
 	UserID      uuid.UUID    `db:"user_id"`
 	Name        string       `db:"name"`
@@ -39,7 +39,7 @@ func (d *Dashboard) CreateDashboard(ctx context.Context, userID values.UserID, d
 
 	_, err = db.ExecContext(
 		ctx,
-		"INSERT INTO dashboard (id, user_id, name, description, created_at) VALUES (?, ?, ?, ?, ?)",
+		"INSERT INTO dashboards (id, user_id, name, description, created_at) VALUES (?, ?, ?, ?, ?)",
 		uuid.UUID(dashboard.GetID()),
 		uuid.UUID(userID),
 		string(dashboard.GetName()),
@@ -61,7 +61,7 @@ func (d *Dashboard) UpdateDashboard(ctx context.Context, dashboard *domain.Dashb
 
 	_, err = db.ExecContext(
 		ctx,
-		"UPDATE dashboard SET name = ?, description = ? WHERE id = ? && deleted_at IS NULL",
+		"UPDATE dashboards SET name = ?, description = ? WHERE id = ? && deleted_at IS NULL",
 		string(dashboard.GetName()),
 		string(dashboard.GetDescription()),
 		uuid.UUID(dashboard.GetID()),
@@ -81,7 +81,7 @@ func (d *Dashboard) DeleteDashboard(ctx context.Context, id values.DashboardID) 
 
 	_, err = db.ExecContext(
 		ctx,
-		"UPDATE dashboard SET deleted_at = ? WHERE id = ?",
+		"UPDATE dashboards SET deleted_at = ? WHERE id = ?",
 		uuid.UUID(id),
 	)
 	if err != nil {
@@ -97,11 +97,11 @@ func (d *Dashboard) GetMyDashboards(ctx context.Context, userID values.UserID) (
 		return nil, fmt.Errorf("failed to get db: %w", err)
 	}
 
-	dashboardTables := []DashboardTable{}
+	dashboardTables := []DashboardsTable{}
 	err = db.SelectContext(
 		ctx,
 		&dashboardTables,
-		"SELECT id, user_id, name, description, created_at FROM dashboard WHERE user_id = ? AND deleted_at IS NULL",
+		"SELECT id, name, description, created_at FROM dashboards WHERE user_id = ? AND deleted_at IS NULL",
 		uuid.UUID(userID),
 	)
 	if err != nil {
@@ -128,13 +128,13 @@ func (d *Dashboard) GetDashboard(ctx context.Context, id values.DashboardID, loc
 		return nil, fmt.Errorf("failed to get db: %w", err)
 	}
 
-	query := "SELECT id, user_id, name, description, created_at FROM dashboard WHERE id = ? AND deleted_at IS NULL"
+	query := "SELECT id, name, description, created_at FROM dashboards WHERE id = ? AND deleted_at IS NULL"
 	switch lockType {
 	case repository.LockTypeRecord:
 		query += " FOR UPDATE"
 	}
 
-	dashboardTable := DashboardTable{}
+	dashboardTable := DashboardsTable{}
 	err = db.GetContext(
 		ctx,
 		&dashboardTable,
@@ -153,4 +153,30 @@ func (d *Dashboard) GetDashboard(ctx context.Context, id values.DashboardID, loc
 	)
 
 	return dashboard, nil
+}
+
+func (d *Dashboard) GetDashboardOwner(ctx context.Context, id values.DashboardID) (*domain.User, error) {
+	db, err := d.db.getDB(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get db: %w", err)
+	}
+
+	userTable := UsersTable{}
+	err = db.GetContext(
+		ctx,
+		&userTable,
+		"SELECT users.id, users.name, users.hashed_password FROM users JOIN dashboards ON users.id = dashboards.user_id WHERE dashboards.id = ? AND users.deleted_at IS NULL AND dashboards.deleted_at IS NULL",
+		uuid.UUID(id),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user: %w", err)
+	}
+
+	user := domain.NewUser(
+		values.NewUserIDFromUUID(userTable.ID),
+		values.NewUserName(userTable.Name),
+		values.NewUserHashedPassword(userTable.HashedPassword),
+	)
+
+	return user, nil
 }
