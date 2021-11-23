@@ -16,17 +16,20 @@ type Dashboard struct {
 	db                   repository.DB
 	dashboardRepository  repository.Dashboard
 	taskStatusRepository repository.TaskStatus
+	taskRepository       repository.Task
 }
 
 func NewDashboard(
 	db repository.DB,
 	dashboardRepository repository.Dashboard,
 	taskStatusRepository repository.TaskStatus,
+	taskRepository repository.Task,
 ) *Dashboard {
 	return &Dashboard{
 		db:                   db,
 		dashboardRepository:  dashboardRepository,
 		taskStatusRepository: taskStatusRepository,
+		taskRepository:       taskRepository,
 	}
 }
 
@@ -135,6 +138,40 @@ func (d *Dashboard) GetMyDashboards(ctx context.Context, user *domain.User) ([]*
 	}
 
 	return dashboards, nil
+}
+
+func (d *Dashboard) GetDashboardInfo(ctx context.Context, id values.DashboardID) (*service.DashboardInfo, error) {
+	dashboard, err := d.dashboardRepository.GetDashboard(ctx, id, repository.LockTypeNone)
+	if errors.Is(err, repository.ErrRecordNotFound) {
+		return nil, service.ErrNoDashboard
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to get dashboard: %w", err)
+	}
+
+	taskStatusList, err := d.taskStatusRepository.GetTaskStatusList(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get task status list: %w", err)
+	}
+
+	taskMap, err := d.taskRepository.GetTasks(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get tasks: %w", err)
+	}
+
+	// TODO: N+1問題
+	taskStatusInfos := make([]*service.TaskStatusInfo, 0, len(taskStatusList))
+	for _, taskStatus := range taskStatusList {
+		taskStatusInfos = append(taskStatusInfos, &service.TaskStatusInfo{
+			TaskStatus: taskStatus,
+			Tasks:      taskMap[taskStatus.GetID()],
+		})
+	}
+
+	return &service.DashboardInfo{
+		Dashboard:  dashboard,
+		TaskStatus: taskStatusInfos,
+	}, nil
 }
 
 func (d *Dashboard) DashboardUpdateAuth(ctx context.Context, user *domain.User, id values.DashboardID) error {
