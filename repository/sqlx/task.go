@@ -114,7 +114,7 @@ func (t *Task) GetTask(ctx context.Context, taskID values.TaskID, lockType repos
 		return nil, fmt.Errorf("failed to get db: %w", err)
 	}
 
-	query := "SELECT * FROM tasks WHERE id = ?"
+	query := "SELECT id, name, description, created_at FROM tasks WHERE id = ?"
 	switch lockType {
 	case repository.LockTypeRecord:
 		query += " FOR UPDATE"
@@ -137,4 +137,37 @@ func (t *Task) GetTask(ctx context.Context, taskID values.TaskID, lockType repos
 		values.NewTaskDescription(taskTable.Description),
 		taskTable.CreatedAt,
 	), nil
+}
+
+func (t *Task) GetTasks(ctx context.Context, dashboardID values.DashboardID) (map[values.TaskStatusID][]*domain.Task, error) {
+	db, err := t.db.getDB(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get db: %w", err)
+	}
+
+	tasks := []TaskTable{}
+	err = db.SelectContext(
+		ctx,
+		&tasks,
+		"SELECT id, task_status_id, name, description, created_at FROM tasks "+
+			"JOIN task_status ON task_status.id = tasks.task_status_id "+
+			"WHERE task_status.dashboard_id = ?",
+		uuid.UUID(dashboardID),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get tasks: %w", err)
+	}
+
+	taskMap := make(map[values.TaskStatusID][]*domain.Task)
+	for _, taskTable := range tasks {
+		task := domain.NewTask(
+			values.NewTaskIDFromUUID(taskTable.ID),
+			values.NewTaskName(taskTable.Name),
+			values.NewTaskDescription(taskTable.Description),
+			taskTable.CreatedAt,
+		)
+		taskMap[values.NewTaskStatusIDFromUUID(taskTable.TaskStatusID)] = append(taskMap[values.NewTaskStatusIDFromUUID(taskTable.TaskStatusID)], task)
+	}
+
+	return taskMap, nil
 }
