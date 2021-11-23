@@ -40,3 +40,23 @@ func (d *Dashboard) CreateDashboard(ctx context.Context, userID values.UserID, d
 
 	return nil
 }
+
+func (d *Dashboard) UpdateDashboard(ctx context.Context, dashboard *domain.Dashboard) error {
+	db, err := d.db.getDB(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get db: %w", err)
+	}
+
+	_, err = db.ExecContext(
+		ctx,
+		"UPDATE dashboard SET name = ?, description = ? WHERE id = ?",
+		string(dashboard.GetName()),
+		string(dashboard.GetDescription()),
+		uuid.UUID(dashboard.GetID()),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to update dashboard: %w", err)
+	}
+
+	return nil
+}
