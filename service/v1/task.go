@@ -67,7 +67,8 @@ func (t *Task) CreateTask(ctx context.Context, taskStatusID values.TaskStatusID,
 func (t *Task) UpdateTask(ctx context.Context, taskID values.TaskID, name values.TaskName, description values.TaskDescription) (*domain.Task, error) {
 	var task *domain.Task
 	err := t.db.Transaction(ctx, nil, func(ctx context.Context) error {
-		task, err := t.taskRepository.GetTask(ctx, taskID, repository.LockTypeRecord)
+		var err error
+		task, err = t.taskRepository.GetTask(ctx, taskID, repository.LockTypeRecord)
 		if errors.Is(err, repository.ErrRecordNotFound) {
 			return errors.New("task not found")
 		}
@@ -114,4 +115,38 @@ func (t *Task) DeleteTask(ctx context.Context, taskID values.TaskID) error {
 	}
 
 	return nil
+}
+
+func (t *Task) MoveTask(ctx context.Context, taskID values.TaskID, taskStatusID values.TaskStatusID) (*domain.Task, error) {
+	var task *domain.Task
+	err := t.db.Transaction(ctx, nil, func(ctx context.Context) error {
+		var err error
+		task, err = t.taskRepository.GetTask(ctx, taskID, repository.LockTypeRecord)
+		if errors.Is(err, repository.ErrRecordNotFound) {
+			return errors.New("task not found")
+		}
+		if err != nil {
+			return fmt.Errorf("failed to get task: %w", err)
+		}
+
+		_, err = t.taskStatusRepository.GetTaskStatus(ctx, taskStatusID, repository.LockTypeRecord)
+		if errors.Is(err, repository.ErrRecordNotFound) {
+			return errors.New("task status not found")
+		}
+		if err != nil {
+			return fmt.Errorf("failed to get task status: %w", err)
+		}
+
+		err = t.taskRepository.UpdateTaskStatus(ctx, taskID, taskStatusID)
+		if err != nil && !errors.Is(err, repository.ErrNoRecordUpdated) {
+			return fmt.Errorf("failed to update task: %w", err)
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed in transaction: %w", err)
+	}
+
+	return task, nil
 }

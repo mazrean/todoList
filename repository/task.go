@@ -12,6 +12,7 @@ import (
 type Task interface {
 	CreateTask(ctx context.Context, taskStatusID values.TaskStatusID, task *domain.Task) error
 	UpdateTask(ctx context.Context, task *domain.Task) error
+	UpdateTaskStatus(ctx context.Context, taskID values.TaskID, taskStatusID values.TaskStatusID) error
 	DeleteTask(ctx context.Context, taskID values.TaskID) error
 	GetTask(ctx context.Context, taskID values.TaskID, lockType LockType) (*domain.Task, error)
 	GetTasks(ctx context.Context, dashboardID values.DashboardID) (map[values.TaskStatusID][]*domain.Task, error)
