@@ -59,7 +59,7 @@ func (d *Dashboard) UpdateDashboard(ctx context.Context, dashboard *domain.Dashb
 		return fmt.Errorf("failed to get db: %w", err)
 	}
 
-	_, err = db.ExecContext(
+	result, err := db.ExecContext(
 		ctx,
 		"UPDATE dashboards SET name = ?, description = ? WHERE id = ? && deleted_at IS NULL",
 		string(dashboard.GetName()),
@@ -68,6 +68,15 @@ func (d *Dashboard) UpdateDashboard(ctx context.Context, dashboard *domain.Dashb
 	)
 	if err != nil {
 		return fmt.Errorf("failed to update dashboard: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return repository.ErrNoRecordUpdated
 	}
 
 	return nil
@@ -79,13 +88,22 @@ func (d *Dashboard) DeleteDashboard(ctx context.Context, id values.DashboardID) 
 		return fmt.Errorf("failed to get db: %w", err)
 	}
 
-	_, err = db.ExecContext(
+	result, err := db.ExecContext(
 		ctx,
 		"UPDATE dashboards SET deleted_at = ? WHERE id = ?",
 		uuid.UUID(id),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to delete dashboard: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return repository.ErrNoRecordUpdated
 	}
 
 	return nil

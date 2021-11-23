@@ -55,7 +55,7 @@ func (u *User) UpdateUser(ctx context.Context, user *domain.User) error {
 		return fmt.Errorf("failed to get db: %w", err)
 	}
 
-	_, err = db.ExecContext(
+	result, err := db.ExecContext(
 		ctx,
 		"UPDATE users SET name = ?, hashed_password = ? WHERE id = ? AND deleted_at IS NULL",
 		string(user.GetName()),
@@ -64,6 +64,15 @@ func (u *User) UpdateUser(ctx context.Context, user *domain.User) error {
 	)
 	if err != nil {
 		return fmt.Errorf("failed to update user: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return repository.ErrNoRecordUpdated
 	}
 
 	return nil
@@ -75,7 +84,7 @@ func (u *User) DeleteUser(ctx context.Context, id values.UserID) error {
 		return fmt.Errorf("failed to get db: %w", err)
 	}
 
-	_, err = db.ExecContext(
+	result, err := db.ExecContext(
 		ctx,
 		"UPDATE users SET deleted_at = ? WHERE id = ? AND deleted_at IS NULL",
 		time.Now(),
@@ -83,6 +92,15 @@ func (u *User) DeleteUser(ctx context.Context, id values.UserID) error {
 	)
 	if err != nil {
 		return fmt.Errorf("failed to delete user: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return repository.ErrNoRecordUpdated
 	}
 
 	return nil

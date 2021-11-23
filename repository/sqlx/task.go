@@ -57,7 +57,7 @@ func (t *Task) UpdateTask(ctx context.Context, task *domain.Task) error {
 		return fmt.Errorf("failed to get db: %w", err)
 	}
 
-	_, err = db.ExecContext(
+	result, err := db.ExecContext(
 		ctx,
 		"UPDATE tasks SET name = ?, description = ? WHERE id = ?",
 		string(task.GetName()),
@@ -66,6 +66,15 @@ func (t *Task) UpdateTask(ctx context.Context, task *domain.Task) error {
 	)
 	if err != nil {
 		return fmt.Errorf("failed to update task: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return repository.ErrNoRecordUpdated
 	}
 
 	return nil
@@ -77,7 +86,7 @@ func (t *Task) UpdateTaskStatus(ctx context.Context, taskID values.TaskID, taskS
 		return fmt.Errorf("failed to get db: %w", err)
 	}
 
-	_, err = db.ExecContext(
+	result, err := db.ExecContext(
 		ctx,
 		"UPDATE tasks SET task_status_id = ? WHERE id = ?",
 		uuid.UUID(taskStatusID),
@@ -85,6 +94,15 @@ func (t *Task) UpdateTaskStatus(ctx context.Context, taskID values.TaskID, taskS
 	)
 	if err != nil {
 		return fmt.Errorf("failed to update task status: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return repository.ErrNoRecordUpdated
 	}
 
 	return nil
@@ -96,13 +114,22 @@ func (t *Task) DeleteTask(ctx context.Context, taskID values.TaskID) error {
 		return fmt.Errorf("failed to get db: %w", err)
 	}
 
-	_, err = db.ExecContext(
+	result, err := db.ExecContext(
 		ctx,
 		"DELETE FROM tasks WHERE id = ?",
 		uuid.UUID(taskID),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to update task: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return repository.ErrNoRecordDeleted
 	}
 
 	return nil
