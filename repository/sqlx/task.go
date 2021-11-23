@@ -171,3 +171,31 @@ func (t *Task) GetTasks(ctx context.Context, dashboardID values.DashboardID) (ma
 
 	return taskMap, nil
 }
+
+func (t *Task) GetTaskOwner(ctx context.Context, id values.TaskID) (*domain.User, error) {
+	db, err := t.db.getDB(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get db: %w", err)
+	}
+
+	userTable := UsersTable{}
+	err = db.GetContext(
+		ctx,
+		&userTable,
+		"SELECT users.id, users.name, users.hashed_password FROM users "+
+			"JOIN dashboards ON users.id = dashboards.user_id "+
+			"JOIN task_status ON dashboards.id = task_status.dashboard_id "+
+			"JOIN tasks ON task_status.id = tasks.task_status_id "+
+			"WHERE tasks.id = ? AND users.deleted_at IS NULL AND dashboards.deleted_at IS NULL AND task_status.deleted_at IS NULL",
+		uuid.UUID(id),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get task owner: %w", err)
+	}
+
+	return domain.NewUser(
+		values.NewUserIDFromUUID(userTable.ID),
+		values.NewUserName(userTable.Name),
+		values.NewUserHashedPassword(userTable.HashedPassword),
+	), nil
+}
