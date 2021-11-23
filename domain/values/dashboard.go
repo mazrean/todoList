@@ -12,7 +12,7 @@ func NewDashboardID() DashboardID {
 	return DashboardID(uuid.New())
 }
 
-func NewDashboadIDFromUUID(id uuid.UUID) DashboardID {
+func NewDashboardIDFromUUID(id uuid.UUID) DashboardID {
 	return DashboardID(id)
 }
 

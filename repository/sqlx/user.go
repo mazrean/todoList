@@ -94,11 +94,17 @@ func (u *User) GetUser(ctx context.Context, userID values.UserID, lockType repos
 		return nil, fmt.Errorf("failed to get db: %w", err)
 	}
 
-	var userTable UsersTable
+	query := "SELECT id, name, hashed_password FROM users WHERE id = ? AND deleted_at IS NULL"
+	switch lockType {
+	case repository.LockTypeRecord:
+		query += " FOR UPDATE"
+	}
+
+	userTable := UsersTable{}
 	err = db.GetContext(
 		ctx,
 		&userTable,
-		"SELECT id, name, hashed_password FROM users WHERE id = ? AND deleted_at IS NULL",
+		query,
 		uuid.UUID(userID),
 	)
 	if err != nil {
@@ -120,7 +126,7 @@ func (u *User) GetUserByName(ctx context.Context, name values.UserName) (*domain
 		return nil, fmt.Errorf("failed to get db: %w", err)
 	}
 
-	var userTable UsersTable
+	userTable := UsersTable{}
 	err = db.GetContext(
 		ctx,
 		&userTable,

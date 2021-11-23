@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/mazrean/todoList/domain"
 	"github.com/mazrean/todoList/domain/values"
+	"github.com/mazrean/todoList/repository"
 )
 
 type DashboardTable struct {
@@ -110,13 +111,46 @@ func (d *Dashboard) GetMyDashboards(ctx context.Context, userID values.UserID) (
 	dashboards := make([]*domain.Dashboard, 0, len(dashboardTables))
 	for _, dashboardTable := range dashboardTables {
 		dashboard := domain.NewDashboard(
-			values.DashboardID(dashboardTable.ID),
-			values.DashboardName(dashboardTable.Name),
-			values.DashboardDescription(dashboardTable.Description),
+			values.NewDashboardIDFromUUID(dashboardTable.ID),
+			values.NewDashboardName(dashboardTable.Name),
+			values.NewDashboardDescription(dashboardTable.Description),
 			dashboardTable.CreatedAt,
 		)
 		dashboards = append(dashboards, dashboard)
 	}
 
 	return dashboards, nil
+}
+
+func (d *Dashboard) GetDashboard(ctx context.Context, id values.DashboardID, lockType repository.LockType) (*domain.Dashboard, error) {
+	db, err := d.db.getDB(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get db: %w", err)
+	}
+
+	query := "SELECT id, user_id, name, description, created_at FROM dashboard WHERE id = ? AND deleted_at IS NULL"
+	switch lockType {
+	case repository.LockTypeRecord:
+		query += " FOR UPDATE"
+	}
+
+	dashboardTable := DashboardTable{}
+	err = db.GetContext(
+		ctx,
+		&dashboardTable,
+		query,
+		uuid.UUID(id),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get dashboard: %w", err)
+	}
+
+	dashboard := domain.NewDashboard(
+		values.NewDashboardIDFromUUID(dashboardTable.ID),
+		values.NewDashboardName(dashboardTable.Name),
+		values.NewDashboardDescription(dashboardTable.Description),
+		dashboardTable.CreatedAt,
+	)
+
+	return dashboard, nil
 }
