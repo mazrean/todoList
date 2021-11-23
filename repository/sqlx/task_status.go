@@ -57,3 +57,21 @@ func (ts *TaskStatus) UpdateTaskStatus(ctx context.Context, taskStatus *domain.T
 
 	return nil
 }
+
+func (ts *TaskStatus) DeleteTaskStatus(ctx context.Context, id values.TaskStatusID) error {
+	db, err := ts.db.getDB(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get db: %w", err)
+	}
+
+	_, err = db.ExecContext(
+		ctx,
+		"DELETE FROM task_status WHERE id = ?",
+		uuid.UUID(id),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to delete task status: %w", err)
+	}
+
+	return nil
+}
