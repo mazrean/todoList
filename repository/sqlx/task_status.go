@@ -101,7 +101,7 @@ func (ts *TaskStatus) GetTaskStatus(ctx context.Context, taskStatusID values.Tas
 	err = db.GetContext(
 		ctx,
 		&taskStatusTable,
-		"SELECT id, name FROM task_status WHERE id = ?",
+		query,
 		uuid.UUID(taskStatusID),
 	)
 	if err != nil {

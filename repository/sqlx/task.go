@@ -27,7 +27,7 @@ func (t *Task) CreateTask(ctx context.Context, taskStatusID values.TaskStatusID,
 
 	_, err = db.ExecContext(
 		ctx,
-		`INSERT INTO tasks (id, task_status_id, name, description, created_at) VALUES (?, ?, ?, ?, ?)`,
+		"INSERT INTO tasks (id, task_status_id, name, description, created_at) VALUES (?, ?, ?, ?, ?)",
 		uuid.UUID(task.GetID()),
 		uuid.UUID(taskStatusID),
 		string(task.GetName()),
@@ -49,13 +49,32 @@ func (t *Task) UpdateTask(ctx context.Context, task *domain.Task) error {
 
 	_, err = db.ExecContext(
 		ctx,
-		`UPDATE tasks SET name = ?, description = ? WHERE id = ?`,
+		"UPDATE tasks SET name = ?, description = ? WHERE id = ?",
 		string(task.GetName()),
 		string(task.GetDescription()),
 		uuid.UUID(task.GetID()),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to update task: %w", err)
+	}
+
+	return nil
+}
+
+func (task *Task) UpdateTaskStatus(ctx context.Context, taskID values.TaskID, taskStatusID values.TaskStatusID) error {
+	db, err := task.db.getDB(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get db: %w", err)
+	}
+
+	_, err = db.ExecContext(
+		ctx,
+		"UPDATE tasks SET task_status_id = ? WHERE id = ?",
+		uuid.UUID(taskStatusID),
+		uuid.UUID(taskID),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to update task status: %w", err)
 	}
 
 	return nil
