@@ -60,3 +60,21 @@ func (d *Dashboard) UpdateDashboard(ctx context.Context, dashboard *domain.Dashb
 
 	return nil
 }
+
+func (d *Dashboard) DeleteDashboard(ctx context.Context, id values.DashboardID) error {
+	db, err := d.db.getDB(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get db: %w", err)
+	}
+
+	_, err = db.ExecContext(
+		ctx,
+		"UPDATE dashboard SET deleted_at = ? WHERE id = ?",
+		uuid.UUID(id),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to delete dashboard: %w", err)
+	}
+
+	return nil
+}
