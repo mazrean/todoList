@@ -40,3 +40,23 @@ func (t *Task) CreateTask(ctx context.Context, taskStatusID values.TaskStatusID,
 
 	return nil
 }
+
+func (t *Task) UpdateTask(ctx context.Context, task *domain.Task) error {
+	db, err := t.db.getDB(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get db: %w", err)
+	}
+
+	_, err = db.ExecContext(
+		ctx,
+		`UPDATE tasks SET name = ?, description = ? WHERE id = ?`,
+		string(task.GetName()),
+		string(task.GetDescription()),
+		uuid.UUID(task.GetID()),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to update task: %w", err)
+	}
+
+	return nil
+}
