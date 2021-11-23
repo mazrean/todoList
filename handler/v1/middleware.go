@@ -128,9 +128,9 @@ func (m *Middleware) TaskStatusUpdateAuth() gin.HandlerFunc {
 			user,
 			values.NewTaskStatusIDFromUUID(taskStatusID),
 		)
-		if errors.Is(err, service.ErrNoDashboard) {
+		if errors.Is(err, service.ErrNoTaskStatus) {
 			c.JSON(http.StatusNotFound, gin.H{
-				"error": "no dashboard",
+				"error": "no task status",
 			})
 			return
 		}
@@ -180,9 +180,9 @@ func (m *Middleware) TaskUpdateAuth() gin.HandlerFunc {
 			user,
 			values.NewTaskIDFromUUID(taskID),
 		)
-		if errors.Is(err, service.ErrNoDashboard) {
+		if errors.Is(err, service.ErrNoTask) {
 			c.JSON(http.StatusNotFound, gin.H{
-				"error": "no dashboard",
+				"error": "no task",
 			})
 			return
 		}

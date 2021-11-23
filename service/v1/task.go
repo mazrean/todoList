@@ -38,7 +38,7 @@ func (t *Task) CreateTask(ctx context.Context, taskStatusID values.TaskStatusID,
 	err := t.db.Transaction(ctx, nil, func(ctx context.Context) error {
 		_, err := t.taskStatusRepository.GetTaskStatus(ctx, taskStatusID, repository.LockTypeRecord)
 		if errors.Is(err, repository.ErrRecordNotFound) {
-			return errors.New("task status not found")
+			return service.ErrNoTaskStatus
 		}
 		if err != nil {
 			return fmt.Errorf("failed to get task status: %w", err)
@@ -71,7 +71,7 @@ func (t *Task) UpdateTask(ctx context.Context, taskID values.TaskID, name values
 		var err error
 		task, err = t.taskRepository.GetTask(ctx, taskID, repository.LockTypeRecord)
 		if errors.Is(err, repository.ErrRecordNotFound) {
-			return errors.New("task not found")
+			return service.ErrNoTask
 		}
 		if err != nil {
 			return fmt.Errorf("failed to get task: %w", err)
@@ -98,7 +98,7 @@ func (t *Task) DeleteTask(ctx context.Context, taskID values.TaskID) error {
 	err := t.db.Transaction(ctx, nil, func(ctx context.Context) error {
 		_, err := t.taskRepository.GetTask(ctx, taskID, repository.LockTypeRecord)
 		if errors.Is(err, repository.ErrRecordNotFound) {
-			return errors.New("task not found")
+			return service.ErrNoTask
 		}
 		if err != nil {
 			return fmt.Errorf("failed to get task: %w", err)
@@ -124,7 +124,7 @@ func (t *Task) MoveTask(ctx context.Context, taskID values.TaskID, taskStatusID 
 		var err error
 		task, err = t.taskRepository.GetTask(ctx, taskID, repository.LockTypeRecord)
 		if errors.Is(err, repository.ErrRecordNotFound) {
-			return errors.New("task not found")
+			return service.ErrNoTask
 		}
 		if err != nil {
 			return fmt.Errorf("failed to get task: %w", err)
@@ -132,7 +132,7 @@ func (t *Task) MoveTask(ctx context.Context, taskID values.TaskID, taskStatusID 
 
 		_, err = t.taskStatusRepository.GetTaskStatus(ctx, taskStatusID, repository.LockTypeRecord)
 		if errors.Is(err, repository.ErrRecordNotFound) {
-			return errors.New("task status not found")
+			return service.ErrNoTaskStatus
 		}
 		if err != nil {
 			return fmt.Errorf("failed to get task status: %w", err)
@@ -155,7 +155,7 @@ func (t *Task) MoveTask(ctx context.Context, taskID values.TaskID, taskStatusID 
 func (t *Task) TaskUpdateAuth(ctx context.Context, user *domain.User, taskID values.TaskID) error {
 	_, err := t.taskRepository.GetTask(ctx, taskID, repository.LockTypeNone)
 	if errors.Is(err, repository.ErrRecordNotFound) {
-		return errors.New("task not found")
+		return service.ErrNoTask
 	}
 	if err != nil {
 		return fmt.Errorf("failed to get task: %w", err)
