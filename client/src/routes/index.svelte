@@ -7,11 +7,13 @@ import LinkList from "../components/LinkList.svelte";
 
   let dashboards: Item[] = [];
   getMyDashboards().then(dashboardInfos => {
+    let dashboardList: Item[] = [];
     for (let dashboard of dashboardInfos) {
-      dashboards.push({
+      dashboardList.push({
         label: dashboard.name,
         link: `/dashboard/${dashboard.id}`,
       })
+      dashboards = dashboardList;
     }
   }).catch((err: Error) => {
     toast.push(`${err.code}:${err.error}`, {

@@ -25,11 +25,15 @@
 
 <div class="wrapper">
   <div class="container">
+    <h3>ユーザー作成</h3>
     <UserForm label="signup" on:submit={submit} />
   </div>
 </div>
 
 <style>
+  h3 {
+    margin-bottom: 5px;
+  }
   .wrapper {
     margin: 15px auto;
     width: 100%;
