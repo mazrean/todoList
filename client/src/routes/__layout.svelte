@@ -2,9 +2,14 @@
   import Header from '../components/Header.svelte';
   import { SvelteToast, toast } from '@zerodevx/svelte-toast';
   import type { Error } from '../api/common';
-  import { getMeAction } from '../store/user';
+  import { getMeAction, user } from '../store/user';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+
+  let me: string|null = null;
+  user.subscribe(user => {
+    me = user;
+  });
 
   if ($page.path !== '/login' && $page.path !== '/signup') {
     getMeAction().catch((err: Error) => {
@@ -24,5 +29,5 @@
 </script>
 
 <SvelteToast />
-<Header title="ToDo List" />
+<Header title="ToDo List" user={me} />
 <slot></slot>

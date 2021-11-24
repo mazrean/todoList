@@ -1,31 +1,36 @@
 <script type=ts>
   import UserForm from "../components/UserForm.svelte";
   import { toast } from '@zerodevx/svelte-toast';
-  import { signupAction } from "../store/user";
+  import { updateMeAction, user } from "../store/user";
   import type { Error } from '../api/common';
   import { UserInfo } from "../api/user";
-  import { goto } from "$app/navigation";
+
+  let me: string|null = null;
+  user.subscribe(user => {
+    me = user;
+  });
 
   async function submit(event: any) {
-    signupAction(new UserInfo(
+    updateMeAction(new UserInfo(
       event.detail.name,
       event.detail.password,
-    )).catch((err: Error) => {
+    )).then(() => {
+      toast.push("ユーザー情報の更新に成功しました");
+    }).catch((err: Error) => {
       toast.push(`${err.code}:${err.error}`, {
         theme: {
           '--toastBackground': '#F56565',
           '--toastBarBackground': '#C53030'
         }
       });
-    }).then(() => {
-      goto('/');
     });
   }
 </script>
 
 <div class="wrapper">
   <div class="container">
-    <UserForm label="signup" on:submit={submit} />
+    <h3>ユーザー情報変更</h3>
+    <UserForm name={me} label="update" on:submit={submit} />
   </div>
 </div>
 

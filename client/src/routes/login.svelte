@@ -23,14 +23,23 @@
   }
 </script>
 
-<div>
-  <UserForm label="login" on:submit={submit} />
+<div class="wrapper">
+  <div class="container">
+    <UserForm label="login" on:submit={submit} /><br>
+    <a href="/signup">アカウント作成</a>
+  </div>
 </div>
 
 <style>
-  div {
+  .wrapper {
     margin: 15px auto;
     width: 100%;
     display: flex;
+  }
+  .container {
+    margin: 0 auto;
+  }
+  a {
+    color: #666;
   }
 </style>

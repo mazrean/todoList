@@ -1,15 +1,15 @@
 import type { Message, Error } from "../api/common";
-import { UserInfo, getMe, postSignup, postLogin } from '../api/user';
+import { UserInfo, getMe, postSignup, postLogin, patchMe } from '../api/user';
 import { writable } from 'svelte/store';
 
-export const user = writable<UserInfo>(null);
+export const user = writable<string>(null);
 
 export async function getMeAction(): Promise<void> {
   const userInfo = await getMe().catch((err: Error) => {
     throw err;
   })
 
-  user.set(userInfo);
+  user.set(userInfo.name);
 }
 
 export async function signupAction(userInfo: UserInfo): Promise<Message> {
@@ -17,7 +17,7 @@ export async function signupAction(userInfo: UserInfo): Promise<Message> {
     throw err;
   })
 
-  user.set(userInfo);
+  user.set(userInfo.name);
 
   return message;
 }
@@ -27,7 +27,17 @@ export async function loginAction(userInfo: UserInfo): Promise<Message> {
     throw err;
   })
 
-  user.set(userInfo);
+  user.set(userInfo.name);
+
+  return message;
+}
+
+export async function updateMeAction(userInfo: UserInfo): Promise<Message> {
+  const message = await patchMe(userInfo).catch((err: Error) => {
+    throw err;
+  })
+
+  user.set(userInfo.name);
 
   return message;
 }

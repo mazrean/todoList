@@ -1,8 +1,8 @@
 <script type=ts>
   import { createEventDispatcher } from 'svelte';
 
-  let name = "";
-  let password = "";
+  export let name = "";
+  export let password = "";
   export let label: string;
 
   const dispatch = createEventDispatcher();
@@ -18,14 +18,13 @@
   <p>name</p>
   <input bind:value={name}>
   <p>password</p>
-  <input bind:value={password}><br>
+  <input type="password" bind:value={password}><br>
   <button on:click={submit}>{label}</button>
 </div>
 
 <style>
   div {
     display: inline-block;
-    margin: 0 auto;
   }
   p {
     margin: 0;
