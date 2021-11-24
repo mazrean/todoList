@@ -30,5 +30,6 @@ require (
 
 require (
 	github.com/gin-contrib/sessions v0.0.4
+	github.com/google/wire v0.5.0
 	github.com/gorilla/securecookie v1.1.1 // indirect
 )

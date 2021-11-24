@@ -5,6 +5,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      DB_USERNAME: sysdes
+      DB_PASSWORD: sysdes
+      DB_HOSTNAME: mysql
+      DB_PORT: 3306
+      DB_DATABASE: todo_list
+      PORT: :3000
+      SESSION_KEY: session
+      SESSION_SECRET: secret
     ports:
       - 3000:3000
       - 2345:2345
@@ -14,3 +23,15 @@ services:
       - apparmor:unconfined
     cap_add:
       - SYS_PTRACE
+  mysql:
+    image: mysql:8.0
+    platform: linux/x86_64
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: todo_list
+      MYSQL_USER: sysdes
+      MYSQL_PASSWORD: sysdes
+      TZ: Asia/Tokyo
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d

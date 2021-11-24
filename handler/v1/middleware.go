@@ -46,8 +46,6 @@ func (m *Middleware) LoginAuth() gin.HandlerFunc {
 			return
 		}
 
-		m.context.setSession(c, session)
-
 		c.Next()
 	}
 }
@@ -96,8 +94,6 @@ func (m *Middleware) DashboardUpdateAuth() gin.HandlerFunc {
 			})
 			return
 		}
-
-		m.context.setSession(c, session)
 
 		c.Next()
 	}
@@ -148,7 +144,6 @@ func (m *Middleware) TaskStatusUpdateAuth() gin.HandlerFunc {
 			return
 		}
 
-		m.context.setSession(c, session)
 		m.context.setTaskStatus(c, taskStatus)
 
 		c.Next()
@@ -199,8 +194,6 @@ func (m *Middleware) TaskUpdateAuth() gin.HandlerFunc {
 			})
 			return
 		}
-
-		m.context.setSession(c, session)
 
 		c.Next()
 	}

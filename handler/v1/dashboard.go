@@ -55,14 +55,7 @@ func (d *Dashboard) PostDashboard(c *gin.Context) {
 		return
 	}
 
-	session, ok := d.context.getSession(c)
-	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "session not found",
-		})
-		return
-	}
-
+	session := d.session.getSession(c)
 	user, err := d.session.getUser(session)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -174,14 +167,7 @@ func (d *Dashboard) DeleteDashboard(c *gin.Context) {
 }
 
 func (d *Dashboard) GetMyDashboards(c *gin.Context) {
-	session, ok := d.context.getSession(c)
-	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "session not found",
-		})
-		return
-	}
-
+	session := d.session.getSession(c)
 	user, err := d.session.getUser(session)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

@@ -73,9 +73,9 @@ func (db *DB) Transaction(ctx context.Context, txOption *sql.TxOptions, fn func(
 
 	err = fn(ctx)
 	if err != nil {
-		err := tx.Rollback()
-		if err != nil {
-			return fmt.Errorf("failed to rollback transaction: %w", err)
+		err2 := tx.Rollback()
+		if err2 != nil {
+			return fmt.Errorf("failed to rollback transaction: %w", err2)
 		}
 
 		return fmt.Errorf("failed in transaction: %w", err)
@@ -89,15 +89,22 @@ func (db *DB) Transaction(ctx context.Context, txOption *sql.TxOptions, fn func(
 	return nil
 }
 
-func (db *DB) getDB(ctx context.Context) (*sqlx.DB, error) {
+type db interface {
+	sqlx.QueryerContext
+	sqlx.ExecerContext
+	GetContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
+	SelectContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
+}
+
+func (db *DB) getDB(ctx context.Context) (db, error) {
 	iDB := ctx.Value(dbCtxKey)
 	if iDB == nil {
 		return db.db, nil
 	}
 
-	sqlxDB, ok := iDB.(*sqlx.DB)
+	sqlxDB, ok := iDB.(*sqlx.Tx)
 	if !ok {
-		return nil, errors.New("failed to get gorm.DB")
+		return nil, errors.New("failed to get sqlx.Tx from context")
 	}
 
 	return sqlxDB, nil

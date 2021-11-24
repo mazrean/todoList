@@ -29,8 +29,8 @@ func NewUser(
 }
 
 type UserInfo struct {
-	Name     string `json:"name" binding:"required,min:8,max:25"`
-	Password string `json:"password" binding:"required,min:10,max:50,alphanum"`
+	Name     string `json:"name" binding:"required,max=25"`
+	Password string `json:"password,omitempty" binding:"required,min=10,max=50,alphanum"`
 }
 
 func (u *User) PostSignup(c *gin.Context) {
@@ -124,14 +124,7 @@ func (u *User) PostLogin(c *gin.Context) {
 }
 
 func (u *User) GetMe(c *gin.Context) {
-	session, ok := u.context.getSession(c)
-	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "failed to get session",
-		})
-		return
-	}
-
+	session := u.session.getSession(c)
 	user, err := u.session.getUser(session)
 	if err != nil {
 		log.Printf("failed to get user: %v\n", err)
@@ -156,14 +149,7 @@ func (u *User) PatchMe(c *gin.Context) {
 		return
 	}
 
-	session, ok := u.context.getSession(c)
-	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "failed to get session",
-		})
-		return
-	}
-
+	session := u.session.getSession(c)
 	user, err := u.session.getUser(session)
 	if err != nil {
 		log.Printf("failed to get user: %v\n", err)
@@ -202,14 +188,7 @@ func (u *User) PatchMe(c *gin.Context) {
 }
 
 func (u *User) DeleteMe(c *gin.Context) {
-	session, ok := u.context.getSession(c)
-	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "failed to get session",
-		})
-		return
-	}
-
+	session := u.session.getSession(c)
 	user, err := u.session.getUser(session)
 	if err != nil {
 		log.Printf("failed to get user: %v\n", err)

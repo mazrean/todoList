@@ -17,8 +17,8 @@ type TaskStatus struct {
 	taskStatusRepository repository.TaskStatus
 }
 
-func NewTaskStatus(db repository.DB, dashboardRepository repository.Dashboard, taskStatusRepository repository.TaskStatus) TaskStatus {
-	return TaskStatus{
+func NewTaskStatus(db repository.DB, dashboardRepository repository.Dashboard, taskStatusRepository repository.TaskStatus) *TaskStatus {
+	return &TaskStatus{
 		db:                   db,
 		dashboardRepository:  dashboardRepository,
 		taskStatusRepository: taskStatusRepository,

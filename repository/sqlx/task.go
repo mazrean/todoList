@@ -181,7 +181,7 @@ func (t *Task) GetTasks(ctx context.Context, dashboardID values.DashboardID) (ma
 	err = db.SelectContext(
 		ctx,
 		&tasks,
-		"SELECT id, task_status_id, name, description, created_at FROM tasks "+
+		"SELECT tasks.id, tasks.task_status_id, tasks.name, tasks.description, tasks.created_at FROM tasks "+
 			"JOIN task_status ON task_status.id = tasks.task_status_id "+
 			"WHERE task_status.dashboard_id = ?",
 		uuid.UUID(dashboardID),
