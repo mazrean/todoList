@@ -1,5 +1,5 @@
 import type { Message, Error } from "../api/common";
-import { UserInfo, getMe, postSignup, postLogin, patchMe } from '../api/user';
+import { UserInfo, getMe, postSignup, postLogin, patchMe, deleteMe } from '../api/user';
 import { writable } from 'svelte/store';
 
 export const user = writable<string>(null);
@@ -38,6 +38,16 @@ export async function updateMeAction(userInfo: UserInfo): Promise<Message> {
   })
 
   user.set(userInfo.name);
+
+  return message;
+}
+
+export async function deleteMeAction(): Promise<Message> {
+  const message = await deleteMe().catch((err: Error) => {
+    throw err;
+  })
+
+  user.set(null);
 
   return message;
 }
