@@ -45,7 +45,7 @@ func (ts *TaskStatus) PostTaskStatus(c *gin.Context) {
 	err := c.BindJSON(&taskStatusInfo)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "invalid request",
+			"error": "invalid request",
 		})
 		return
 	}

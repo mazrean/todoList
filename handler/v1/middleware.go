@@ -40,7 +40,7 @@ func (m *Middleware) LoginAuth() gin.HandlerFunc {
 		session := m.session.getSession(c)
 		_, err := m.session.getUser(session)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"error": "unauthorized",
 			})
 			return
@@ -55,7 +55,7 @@ func (m *Middleware) DashboardUpdateAuth() gin.HandlerFunc {
 		session := m.session.getSession(c)
 		user, err := m.session.getUser(session)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"error": "unauthorized",
 			})
 			return
@@ -64,7 +64,7 @@ func (m *Middleware) DashboardUpdateAuth() gin.HandlerFunc {
 		strDashboardID := c.Param("dashboardID")
 		dashboardID, err := uuid.Parse(strDashboardID)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"error": "invalid dashboard id",
 			})
 			return
@@ -76,20 +76,20 @@ func (m *Middleware) DashboardUpdateAuth() gin.HandlerFunc {
 			values.NewDashboardIDFromUUID(dashboardID),
 		)
 		if errors.Is(err, service.ErrNoDashboard) {
-			c.JSON(http.StatusNotFound, gin.H{
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 				"error": "no dashboard",
 			})
 			return
 		}
 		if errors.Is(err, service.ErrNotDashboardOwner) {
-			c.JSON(http.StatusForbidden, gin.H{
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
 				"error": "not dashboard owner",
 			})
 			return
 		}
 		if err != nil {
 			log.Printf("failed to update dashboard auth: %v\n", err)
-			c.JSON(http.StatusInternalServerError, gin.H{
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"error": "failed to update dashboard auth",
 			})
 			return
@@ -104,7 +104,7 @@ func (m *Middleware) TaskStatusUpdateAuth() gin.HandlerFunc {
 		session := m.session.getSession(c)
 		user, err := m.session.getUser(session)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"error": "unauthorized",
 			})
 			return
@@ -113,7 +113,7 @@ func (m *Middleware) TaskStatusUpdateAuth() gin.HandlerFunc {
 		strTaskStatusID := c.Param("taskStatusID")
 		taskStatusID, err := uuid.Parse(strTaskStatusID)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"error": "invalid task status id",
 			})
 			return
@@ -125,20 +125,20 @@ func (m *Middleware) TaskStatusUpdateAuth() gin.HandlerFunc {
 			values.NewTaskStatusIDFromUUID(taskStatusID),
 		)
 		if errors.Is(err, service.ErrNoTaskStatus) {
-			c.JSON(http.StatusNotFound, gin.H{
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 				"error": "no task status",
 			})
 			return
 		}
 		if errors.Is(err, service.ErrNotDashboardOwner) {
-			c.JSON(http.StatusForbidden, gin.H{
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
 				"error": "not dashboard owner",
 			})
 			return
 		}
 		if err != nil {
 			log.Printf("failed to update task status auth: %v\n", err)
-			c.JSON(http.StatusInternalServerError, gin.H{
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"error": "failed to update dashboard auth",
 			})
 			return
@@ -155,7 +155,7 @@ func (m *Middleware) TaskUpdateAuth() gin.HandlerFunc {
 		session := m.session.getSession(c)
 		user, err := m.session.getUser(session)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"error": "unauthorized",
 			})
 			return
@@ -164,7 +164,7 @@ func (m *Middleware) TaskUpdateAuth() gin.HandlerFunc {
 		strTaskID := c.Param("taskID")
 		taskID, err := uuid.Parse(strTaskID)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"error": "invalid task id",
 			})
 			return
@@ -176,20 +176,20 @@ func (m *Middleware) TaskUpdateAuth() gin.HandlerFunc {
 			values.NewTaskIDFromUUID(taskID),
 		)
 		if errors.Is(err, service.ErrNoTask) {
-			c.JSON(http.StatusNotFound, gin.H{
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 				"error": "no task",
 			})
 			return
 		}
 		if errors.Is(err, service.ErrNotDashboardOwner) {
-			c.JSON(http.StatusForbidden, gin.H{
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
 				"error": "not dashboard owner",
 			})
 			return
 		}
 		if err != nil {
 			log.Printf("failed to update task status auth: %v\n", err)
-			c.JSON(http.StatusInternalServerError, gin.H{
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 				"error": "failed to update dashboard auth",
 			})
 			return

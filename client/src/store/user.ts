@@ -1,5 +1,5 @@
-import type { Message, Error } from "src/api/common";
-import { UserInfo, getMe, postSignup, postLogin } from 'src/api/user';
+import type { Message, Error } from "../api/common";
+import { UserInfo, getMe, postSignup, postLogin } from '../api/user';
 import { writable } from 'svelte/store';
 
 export const user = writable<UserInfo>(null);

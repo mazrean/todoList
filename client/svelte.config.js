@@ -9,12 +9,13 @@ const config = {
 	kit: {
 		// hydrate the <div id="svelte"> element in src/app.html
 		target: '#svelte',
+		ssr: false,
 		vite: {
 			server: {
 				port: 3001,
 				proxy: {
 					'/api': {
-						target: 'localhost:3000',
+						target: 'http://localhost:3000',
 						changeOrigin: true,
 						rewrite: path => path.replace(/^\/api/, '/api/v1')
 					}

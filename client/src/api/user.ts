@@ -3,6 +3,11 @@ import { Message, Error } from "./common";
 export class UserInfo {
   name: string;
   password: string;
+
+  constructor(name: string, password: string) {
+    this.name = name;
+    this.password = password;
+  }
 }
 
 export async function postSignup(userInfo: UserInfo): Promise<Message> {

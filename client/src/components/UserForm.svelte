@@ -1,0 +1,42 @@
+<script type=ts>
+  import { createEventDispatcher } from 'svelte';
+
+  let name = "";
+  let password = "";
+  export let label: string;
+
+  const dispatch = createEventDispatcher();
+  function submit() {
+		dispatch('submit', {
+      name,
+      password
+    });
+	}
+</script>
+
+<div>
+  <p>name</p>
+  <input bind:value={name}>
+  <p>password</p>
+  <input bind:value={password}><br>
+  <button on:click={submit}>{label}</button>
+</div>
+
+<style>
+  div {
+    display: inline-block;
+    margin: 0 auto;
+  }
+  p {
+    margin: 0;
+  }
+  input {
+    margin-bottom: 15px;
+  }
+  button {
+    cursor: pointer;
+    background-color: transparent;
+    color: #222;
+    border: 1px solid #e5e5e5;
+  }
+</style>
