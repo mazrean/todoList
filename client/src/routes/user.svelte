@@ -1,10 +1,10 @@
 <script type=ts>
   import UserForm from "../components/UserForm.svelte";
   import { toast } from '@zerodevx/svelte-toast';
-  import { deleteMeAction, deleteMeAction, updateMeAction, user } from "../store/user";
+  import { deleteMeAction, updateMeAction, user } from "../store/user";
   import type { Error } from '../api/common';
   import { UserInfo } from "../api/user";
-import { goto } from "$app/navigation";
+  import { goto } from "$app/navigation";
 
   let me: string|null = null;
   user.subscribe(user => {
