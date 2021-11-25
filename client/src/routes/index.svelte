@@ -3,7 +3,7 @@
   import type { Item } from "../components/Sidebar";
   import { toast } from '@zerodevx/svelte-toast';
   import type { Error } from '../api/common';
-import LinkList from "../components/LinkList.svelte";
+  import LinkList from "../components/LinkList.svelte";
 
   let dashboards: Item[] = [];
   getMyDashboards().then(dashboardInfos => {
@@ -39,8 +39,5 @@ import LinkList from "../components/LinkList.svelte";
   }
   .container {
     margin: 0 auto;
-  }
-  a {
-    color: #666;
   }
 </style>

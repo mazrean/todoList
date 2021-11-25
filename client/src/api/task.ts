@@ -9,11 +9,11 @@ export class TaskInfo {
   id: string;
   name: string;
   description: string;
-  createdAt: Date;
+  createdAt: string;
 }
 
 export async function postTask(taskStatusID: string, task: TaskMeta): Promise<TaskInfo> {
-  return fetch(`/api/taskStatuses/${taskStatusID}/tasks`, {
+  return fetch(`/api/tasks/status/${taskStatusID}/tasks`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"

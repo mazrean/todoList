@@ -1,7 +1,7 @@
 <script type=ts>
   import { goto } from "$app/navigation";
   import { toast } from "@zerodevx/svelte-toast";
-import { postDashboard } from "../../api/dashboard";
+  import { postDashboard } from "../../api/dashboard";
   import type { Error } from '../../api/common';
   import DashboardForm from "../../components/DashboardForm.svelte";
 

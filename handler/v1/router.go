@@ -55,24 +55,24 @@ func (a *API) Start() {
 
 		dashboard := api.Group("/dashboards")
 		{
-			dashboard.POST("", a.dashboardHandler.PostDashboard, a.middleware.LoginAuth())
-			dashboard.PATCH("/:dashboardID", a.dashboardHandler.PatchDashboard, a.middleware.DashboardUpdateAuth())
-			dashboard.DELETE("/:dashboardID", a.dashboardHandler.DeleteDashboard, a.middleware.DashboardUpdateAuth())
-			dashboard.GET("/:dashboardID", a.dashboardHandler.GetDashboardInfo, a.middleware.DashboardUpdateAuth())
-			dashboard.POST("/:dashboardID/status", a.taskStatusHandler.PostTaskStatus, a.middleware.DashboardUpdateAuth())
+			dashboard.POST("", a.middleware.LoginAuth(), a.dashboardHandler.PostDashboard)
+			dashboard.PATCH("/:dashboardID", a.middleware.DashboardUpdateAuth(), a.dashboardHandler.PatchDashboard)
+			dashboard.DELETE("/:dashboardID", a.middleware.DashboardUpdateAuth(), a.dashboardHandler.DeleteDashboard)
+			dashboard.GET("/:dashboardID", a.middleware.DashboardUpdateAuth(), a.dashboardHandler.GetDashboardInfo)
+			dashboard.POST("/:dashboardID/status", a.middleware.DashboardUpdateAuth(), a.taskStatusHandler.PostTaskStatus)
 		}
 
 		task := api.Group("/tasks")
 		{
-			task.PATCH("/:taskID", a.taskHandler.PatchTask, a.middleware.TaskUpdateAuth())
-			task.DELETE("/:taskID", a.taskHandler.DeleteTask, a.middleware.TaskUpdateAuth())
-			task.PATCH("/:taskID/move", a.taskHandler.PatchMoveTask, a.middleware.TaskUpdateAuth())
+			task.PATCH("/:taskID", a.middleware.TaskUpdateAuth(), a.taskHandler.PatchTask)
+			task.DELETE("/:taskID", a.middleware.TaskUpdateAuth(), a.taskHandler.DeleteTask)
+			task.PATCH("/:taskID/move", a.middleware.TaskUpdateAuth(), a.taskHandler.PatchMoveTask)
 
 			status := task.Group("/status")
 			{
-				status.PATCH("/:taskStatusID", a.taskStatusHandler.PatchTaskStatus, a.middleware.TaskStatusUpdateAuth())
-				status.DELETE("/:taskStatusID", a.taskStatusHandler.DeleteTaskStatus, a.middleware.TaskStatusUpdateAuth())
-				status.POST("/:taskStatusID/tasks", a.taskHandler.PostTask, a.middleware.TaskStatusUpdateAuth())
+				status.PATCH("/:taskStatusID", a.middleware.TaskStatusUpdateAuth(), a.taskStatusHandler.PatchTaskStatus)
+				status.DELETE("/:taskStatusID", a.middleware.TaskStatusUpdateAuth(), a.taskStatusHandler.DeleteTaskStatus, a.middleware.TaskStatusUpdateAuth())
+				status.POST("/:taskStatusID/tasks", a.middleware.TaskStatusUpdateAuth(), a.taskHandler.PostTask)
 			}
 		}
 	}
