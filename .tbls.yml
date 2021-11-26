@@ -1,3 +1,5 @@
+dsn: mariadb://sysdes:sysdes@localhost:3306/todo_list
+
 docPath: docs/dbschema
 er:
   format: svg
