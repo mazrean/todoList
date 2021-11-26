@@ -42,31 +42,36 @@
   }
 </script>
 
-<div class="wrapper">
-  <div class="container">
-    <h3>ユーザー情報変更</h3>
+<div class="container">
+  <div class="content">
+    <h3>Change Account Information</h3>
     <UserForm name={me} label="update" on:submit={submit} />
-    <h3>アカウント削除</h3>
+  </div>
+  <div class="content">
+    <h3>Delete Account</h3>
     <button on:click={deleteAccount}>delete</button>
   </div>
 </div>
 
 <style>
-  .wrapper {
-    margin: 15px auto;
-    width: 100%;
-    display: flex;
-  }
   .container {
-    margin: 0 auto;
+    height: 100%;
+    width: 100%;
+  }
+  .content {
+    margin: 0 5px;
+    margin-bottom: 25px;
   }
   h3 {
-    margin-bottom: 5px;
+    font-size: 24px;
+    line-height: 1.4;
+    color: #222;
+    margin: 0;
   }
   button {
     cursor: pointer;
-    background-color: transparent;
-    color: #222;
-    border: 1px solid #e5e5e5;
+    background-color: #f0506e;
+    color: #fff;
+    border: 1px solid transparent;
   }
 </style>

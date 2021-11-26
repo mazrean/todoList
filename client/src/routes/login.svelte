@@ -23,22 +23,18 @@
   }
 </script>
 
-<div class="wrapper">
-  <div class="container">
-    <h3>ログイン</h3>
-    <UserForm label="login" on:submit={submit} /><br>
-    <a href="/signup">アカウント作成</a>
-  </div>
+<div class="container">
+  <h3>Login</h3>
+  <UserForm label="login" on:submit={submit} /><br>
+  <a href="/signup">New Account</a>
 </div>
 
 <style>
   h3 {
-    margin-bottom: 5px;
-  }
-  .wrapper {
-    margin: 15px auto;
-    width: 100%;
-    display: flex;
+    font-size: 24px;
+    line-height: 1.4;
+    color: #222;
+    margin: 0;
   }
   .container {
     margin: 0 auto;

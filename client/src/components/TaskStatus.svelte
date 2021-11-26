@@ -21,8 +21,19 @@ function edit(event: any) {
   {:else}
     {#each tasks as task}
       <div class="container">
-        <Task task={task} on:submit={edit} on:delete />
+        <Task task={task} on:submit={edit} on:delete on:left on:right />
       </div>
     {/each}
   {/if}
 </div>
+
+<style>
+  h3 {
+    margin: 5px;
+  }
+  .wrapper {
+    background-color: #f8f8f8;
+    padding: 5px;
+    border-radius: 5px;
+  }
+</style>

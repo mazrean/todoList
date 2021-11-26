@@ -11,6 +11,8 @@
       name,
       description
     });
+    name = "";
+    description = "";
 	}
 </script>
 
@@ -25,6 +27,7 @@
 <style>
   div {
     display: inline-block;
+    padding: 5px;
   }
   p {
     margin: 0;

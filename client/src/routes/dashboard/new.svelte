@@ -22,26 +22,21 @@
   }
 </script>
 
-<div class="wrapper">
-  <div class="container">
-    <h3>ダッシュボード作成</h3>
-    <DashboardForm label="create" on:submit={submit} />
-  </div>
+<div class="container">
+  <h3>New Dashboard</h3>
+  <DashboardForm label="create" on:submit={submit} />
 </div>
 
 <style>
   h3 {
-    margin-bottom: 5px;
-  }
-  .wrapper {
-    margin: 15px auto;
-    width: 100%;
-    display: flex;
+    font-size: 24px;
+    line-height: 1.4;
+    color: #222;
+    margin: 0;
   }
   .container {
-    margin: 0 auto;
-  }
-  a {
-    color: #666;
+    height: 100%;
+    width: 100%;
+    margin: 0 5px;
   }
 </style>

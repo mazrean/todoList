@@ -81,7 +81,7 @@ func (t *Task) UpdateTask(ctx context.Context, taskID values.TaskID, name values
 		task.SetDescription(description)
 
 		err = t.taskRepository.UpdateTask(ctx, task)
-		if err != nil {
+		if err != nil && !errors.Is(err, repository.ErrNoRecordUpdated) {
 			return fmt.Errorf("failed to update task: %w", err)
 		}
 

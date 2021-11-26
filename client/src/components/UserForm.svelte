@@ -34,8 +34,8 @@
   }
   button {
     cursor: pointer;
-    background-color: transparent;
-    color: #222;
-    border: 1px solid #e5e5e5;
+    background-color: #1e87f0;
+    color: #fff;
+    border: 1px solid transparent;
   }
 </style>
