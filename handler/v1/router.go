@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/mazrean/todoList/common"
 )
@@ -40,7 +41,9 @@ func (a *API) Start() {
 
 	a.session.Use(r)
 
-	api := r.Group("/api/v1")
+	r.Use(static.Serve("/", static.LocalFile("/static", false)))
+
+	api := r.Group("/api")
 	{
 		api.POST("/signup", a.userHandler.PostSignup)
 		api.POST("/login", a.userHandler.PostLogin)

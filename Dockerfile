@@ -1,5 +1,14 @@
 # syntax = docker/dockerfile:1.3.0
 
+FROM node:16.13.0-alpine3.14 as client
+WORKDIR /github.com/mazrean/todoList/client
+COPY ./client/package.json ./client/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm \
+  npm ci
+COPY ./client/ ./
+RUN --mount=type=cache,target=/github.com/mazrean/todoList/client/node_modules/.cache \
+  npm run build
+
 FROM golang:1.17.1-alpine
 
 WORKDIR /app
@@ -15,6 +24,8 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 COPY go.* ./
 RUN --mount=type=cache,target=/go/pkg/mod/cache \
   go mod download
+
+COPY --from=client /github.com/mazrean/todoList/client/build /static
 
 ENTRYPOINT [ "air" ]
 CMD [ "-c", ".air.toml" ]
