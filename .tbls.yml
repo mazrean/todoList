@@ -1,0 +1,61 @@
+docPath: docs/dbschema
+er:
+  format: svg
+
+lint:
+  requireTableComment:
+    enabled: true
+  requireColumnComment:
+    enabled: true
+    exclude:
+      - id
+      - created_at
+      - updated_at
+      - deleted_at
+
+relations:
+  - table: dashboards
+    columns:
+      - user_id
+    parentTable: users
+    parentColumns:
+      - id
+  - table: task_status
+    columns:
+      - dashboard_id
+    parentTable: dashboards
+    parentColumns:
+      - id
+
+comments:
+  - table: users
+    tableComment: ユーザーテーブル
+    columnComments:
+      id: ユーザーUUID
+      name: ユーザー名
+      hashed_password: ハッシュ化されたパスワード
+      deleted_at: 削除日時
+  - table: dashboards
+    tableComment: ダッシュボードテーブル
+    columnComments:
+      id: ダッシュボードUUID
+      user_id: ユーザーUUID
+      name: ダッシュボード名
+      description: ダッシュボードの説明
+      created_at: 作成日時
+      deleted_at: 削除日時
+  - table: task_status
+    tableComment: タスク状態テーブル
+    columnComments:
+      id: 状態UUID
+      dashboard_id: ダッシュボードUUID
+      name: 状態名
+      deleted_at: 削除日時
+  - table: tasks
+    tableComment: タスクテーブル
+    columnComments:
+      id: タスクUUID
+      task_status_id: 状態UUID
+      name: タスク名
+      description: タスクの説明
+      created_at: 作成日時
