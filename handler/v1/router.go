@@ -36,12 +36,27 @@ func NewAPI(
 	}
 }
 
+var spaPaths = []string{
+	"/signup",
+	"/login",
+	"/user",
+	"/dashboard/new",
+	"/dashboard/:dashboardID",
+}
+
 func (a *API) Start() {
 	r := gin.Default()
 
 	a.session.Use(r)
 
 	r.Use(static.Serve("/", static.LocalFile("/static", false)))
+
+	for _, path := range spaPaths {
+		r.GET(path, func(c *gin.Context) {
+			c.Request.URL.Path = "/"
+			r.HandleContext(c)
+		})
+	}
 
 	api := r.Group("/api")
 	{
